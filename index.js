@@ -8,8 +8,8 @@ require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 
-console.log();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.USER_ID}:${process.env.USER_PASSWORD}@cluster0.aibkcfj.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -20,11 +20,36 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+const userCollection = client.db("toyDB");
+const toyInfo = userCollection.collection("toyInfo");
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
      client.connect();
+
+     app.get('/addToy',async(req,res)=>{
+        const cursor = toyInfo.find();
+        const result = await cursor.toArray();
+        res.send(result);
+     })
+
+     app.get('/addToy/:id',async(req,res)=>{
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await toyInfo.findOne(query);
+        res.send(result);
+     })
+
+     app.post('/addToy', async(req,res)=>{
+        const user = req.body;
+        const result = await toyInfo.insertOne(user);
+        res.send(result);
+     })
+
+
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -38,6 +63,7 @@ run().catch(console.log);
 
 app.get('/', (req, res)=>{
     console.log('Connected');
+    res.send('connected...all ok now');
 })
 
 app.listen(port, ()=>{
