@@ -1,5 +1,5 @@
 {
-"version": 2,
+    "version": 2,
 "builds": [
 {
 "src": "./index.js",
@@ -10,14 +10,7 @@
 {
 "src": "/(.*)",
 "dest": "/",
-"methods": [
-"GET",
-"POST",
-"PATCH",
-"PUT",
-"DELETE",
-"OPTIONS"
-]
+"methods": ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
 }
 ]
 }

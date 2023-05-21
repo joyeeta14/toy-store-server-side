@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const port = process.env.PORT || 5000;
 require('dotenv').config();
+const port = process.env.PORT || 5000;
 
 // middle-wares
 app.use(cors());
@@ -18,7 +18,10 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
+  useNewUrlParser: true,
+  useUnifiedTopology : true,
+  maxPoolSize: 10,
 });
 const userCollection = client.db("toyDB");
 const toyInfo = userCollection.collection("toyInfo");
@@ -26,7 +29,12 @@ const toyInfo = userCollection.collection("toyInfo");
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-     client.connect();
+    client.connect(error => {
+      if(error){
+        console.log(error);
+        return;
+      }
+    })
 
      app.get('/addToy',async(req,res)=>{
         const cursor = toyInfo.find();
@@ -72,7 +80,7 @@ async function run() {
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
