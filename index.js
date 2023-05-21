@@ -41,6 +41,27 @@ async function run() {
         res.send(result);
      })
 
+     app.get('/addToy/:text',async(req,res)=>{
+        const text = req.params.text;
+        if(text == 'mini-car'|| text == 'lego-truck' || text == 'police-car' ){
+          const result = await toyInfo.find({category : text }).toArray();
+          return res.send(result);
+        }
+        const result = await toyInfo.find({}).toArray();
+        res.send(result);
+     })
+
+
+
+     app.get('/addToy',async(req,res)=>{
+      let query ={};
+      if(req.query?.email){
+        query = {email : req.query.email};
+      }
+        const result = await toyInfo.find(query).toArray();
+        res.send(result);
+     })
+
      app.post('/addToy', async(req,res)=>{
         const user = req.body;
         const result = await toyInfo.insertOne(user);
